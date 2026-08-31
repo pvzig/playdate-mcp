@@ -11,7 +11,8 @@ agent.
 
 - Use the official MCP TypeScript SDK over stdio.
 - Publish the server as a public npm package and use pinned `npx` invocation as
-  the primary client setup. Keep mise at the development boundary.
+  the primary client setup. Include canonical repository, homepage, and issue
+  tracker metadata. Keep mise at the development boundary.
 - Package the universal `playdate-simctl` and agent from the pinned
   `playdate-cli` 0.1.0 GitHub release. Verify the archive SHA-256 before
   packaging.
