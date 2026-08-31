@@ -21,7 +21,8 @@ The package includes universal `arm64` and `x86_64` builds of
 
 ## Configure an MCP client
 
-Run the published package with `npx`:
+Run [playdate-mcp 0.1.0 from npm](https://www.npmjs.com/package/playdate-mcp/v/0.1.0)
+with `npx`:
 
 ```json
 {
