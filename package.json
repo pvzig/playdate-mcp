@@ -1,0 +1,54 @@
+{
+  "name": "playdate-mcp",
+  "version": "0.1.0",
+  "description": "Control Playdate Simulator through typed MCP tools.",
+  "type": "module",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64",
+    "x64"
+  ],
+  "bin": {
+    "playdate-mcp": "dist/src/main.js"
+  },
+  "files": [
+    "dist/src",
+    "vendor/playdate-cli",
+    "README.md",
+    "SPEC.md"
+  ],
+  "keywords": [
+    "mcp",
+    "playdate",
+    "simulator"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "bundle:cli": "npm run build && node dist/scripts/bundle-playdate-cli.js",
+    "check": "npm run format:check && npm test",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { force: true, recursive: true })\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepack": "npm run bundle:cli",
+    "prepublishOnly": "npm run check",
+    "start": "node dist/src/main.js",
+    "test": "npm run build && node --test --test-reporter=spec 'dist/test/**/*.test.js'"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2"
+  }
+}

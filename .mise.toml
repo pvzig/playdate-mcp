@@ -1,0 +1,18 @@
+[tools]
+node = "24.19.0"
+
+[tasks.build]
+description = "Build the MCP server"
+run = "npm run build"
+
+[tasks.format]
+description = "Format TypeScript and project files"
+run = "npm run format"
+
+[tasks.test]
+description = "Run the test suite"
+run = "npm test"
+
+[tasks.check]
+description = "Build and test the MCP server"
+run = "npm run check"
