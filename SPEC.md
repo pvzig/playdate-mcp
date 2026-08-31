@@ -21,6 +21,8 @@ agent.
   packaging.
 - Validate tool inputs with strict Zod schemas whose emitted JSON Schema
   preserves the same constraints.
+- Advertise the package version in MCP server metadata without duplicating a
+  version literal in source.
 - Start `playdate-simctl` directly with `execFile`; never invoke a shell.
 - Keep agent and Simulator application overrides at the server boundary, not in
   model-controlled tool inputs.

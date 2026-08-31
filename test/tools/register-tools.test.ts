@@ -1,11 +1,19 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 const serverPath = fileURLToPath(new URL("../../src/main.js", import.meta.url));
 
-let cachedTools: readonly ToolDefinition[] | undefined;
+let cachedServerDescription: ServerDescription | undefined;
+
+test("server version matches the package version", () => {
+  const packageMetadata = JSON.parse(
+    readFileSync(new URL("../../../package.json", import.meta.url), "utf8"),
+  ) as { readonly version?: unknown };
+  assert.equal(serverDescription().version, packageMetadata.version);
+});
 
 test("registered tool catalog exposes the complete playdate-simctl surface", () => {
   assert.deepEqual(
@@ -65,8 +73,12 @@ function requireTool(name: string): ToolDefinition {
 }
 
 function listTools(): readonly ToolDefinition[] {
-  if (cachedTools !== undefined) {
-    return cachedTools;
+  return serverDescription().tools;
+}
+
+function serverDescription(): ServerDescription {
+  if (cachedServerDescription !== undefined) {
+    return cachedServerDescription;
   }
 
   const messages = [
@@ -99,15 +111,29 @@ function listTools(): readonly ToolDefinition[] {
     .trim()
     .split("\n")
     .map((line) => JSON.parse(line) as ProtocolResponse);
-  const response = responses.find((candidate) => candidate.id === 2);
-  assert.ok(response?.result?.tools, "Missing tools/list response");
-  cachedTools = response.result.tools;
-  return cachedTools;
+  const initializeResponse = responses.find((candidate) => candidate.id === 1);
+  const toolsResponse = responses.find((candidate) => candidate.id === 2);
+  assert.ok(
+    initializeResponse?.result?.serverInfo?.version,
+    "Missing initialize response server version",
+  );
+  assert.ok(toolsResponse?.result?.tools, "Missing tools/list response");
+  cachedServerDescription = {
+    tools: toolsResponse.result.tools,
+    version: initializeResponse.result.serverInfo.version,
+  };
+  return cachedServerDescription;
+}
+
+interface ServerDescription {
+  readonly tools: readonly ToolDefinition[];
+  readonly version: string;
 }
 
 interface ProtocolResponse {
   readonly id?: number;
   readonly result?: {
+    readonly serverInfo?: { readonly version?: string };
     readonly tools?: readonly ToolDefinition[];
   };
 }

@@ -21,7 +21,7 @@ The package includes universal `arm64` and `x86_64` builds of
 
 ## Configure an MCP client
 
-Run [playdate-mcp 0.1.1 from npm](https://www.npmjs.com/package/playdate-mcp/v/0.1.1)
+Run [playdate-mcp 0.1.2 from npm](https://www.npmjs.com/package/playdate-mcp/v/0.1.2)
 with `npx`:
 
 ```json
@@ -29,7 +29,7 @@ with `npx`:
   "mcpServers": {
     "playdate": {
       "command": "npx",
-      "args": ["-y", "playdate-mcp@0.1.1"],
+      "args": ["-y", "playdate-mcp@0.1.2"],
       "env": {
         "PLAYDATE_SIMCTL_WORKING_DIRECTORY": "/absolute/path/to/game"
       }

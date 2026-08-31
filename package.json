@@ -1,6 +1,6 @@
 {
   "name": "playdate-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Control Playdate Simulator through typed MCP tools.",
   "homepage": "https://github.com/pvzig/playdate-mcp#readme",
   "bugs": {
