@@ -13,6 +13,9 @@ agent.
 - Publish the server as a public npm package and use pinned `npx` invocation as
   the primary client setup. Include canonical repository, homepage, and issue
   tracker metadata. Keep mise at the development boundary.
+- Publish matching GitHub Releases through npm trusted publishing on a
+  GitHub-hosted macOS runner. Require the release tag to match the package
+  version and use OIDC provenance without a long-lived npm token.
 - Package the universal `playdate-simctl` and agent from the pinned
   `playdate-cli` 0.1.0 GitHub release. Verify the archive SHA-256 before
   packaging.
@@ -78,6 +81,7 @@ artifact makes the tool result unsuccessful even when the CLI exits normally.
 
 - `src/main.ts` and `src/application.ts` own transport, lifecycle, and
   composition.
+- `.github/workflows/publish.yml` validates and publishes GitHub Releases.
 - `scripts` acquires and verifies the pinned native release for packaging.
 - `src/configuration` reads process-boundary settings.
 - `src/tools` defines schemas, metadata, registration, and MCP presentation.
