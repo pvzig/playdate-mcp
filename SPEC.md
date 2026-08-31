@@ -100,7 +100,8 @@ For implementation changes:
 
 The current 2026-08-30 baseline passed the strict build and 32 tests, stdio MCP
 initialization and catalog checks, real-CLI parsing, structured 1 MiB overflow
-handling, and `git diff --check`. The npm package contains only runtime files
-and executable universal CLI artifacts. Live validation passed status, pause,
-resume, and a 400 by 240 grayscale PNG screenshot through the full bundled
-MCP-to-Simulator path.
+handling, and `git diff --check`. The published `playdate-mcp@0.1.0` package
+contains only runtime files and executable universal CLI artifacts. A clean
+registry install completed MCP initialization and listed all 15 tools. Live
+validation passed status, pause, resume, and a 400 by 240 grayscale PNG
+screenshot through the full bundled MCP-to-Simulator path.
