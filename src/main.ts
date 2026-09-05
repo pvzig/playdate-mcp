@@ -13,14 +13,16 @@ const handle = serveStdio(() => createServer(configuration), {
 });
 
 let isClosing = false;
-async function close(signal: NodeJS.Signals): Promise<void> {
+type ShutdownReason = "SIGINT" | "SIGTERM" | "stdin_end";
+
+async function close(reason: ShutdownReason): Promise<void> {
   if (isClosing) {
     return;
   }
   isClosing = true;
-  log("shutdown_started", { signal });
+  log("shutdown_started", { reason });
   await handle.close();
-  log("shutdown_completed", { signal });
+  log("shutdown_completed", { reason });
 }
 
 process.once("SIGINT", () => {
@@ -29,11 +31,14 @@ process.once("SIGINT", () => {
 process.once("SIGTERM", () => {
   requestClose("SIGTERM");
 });
+process.stdin.once("end", () => {
+  requestClose("stdin_end");
+});
 
-function requestClose(signal: NodeJS.Signals): void {
-  void close(signal).catch((error: unknown) => {
+function requestClose(reason: ShutdownReason): void {
+  void close(reason).catch((error: unknown) => {
     process.exitCode = 1;
-    log("shutdown_failed", { message: errorMessage(error), signal });
+    log("shutdown_failed", { message: errorMessage(error), reason });
   });
 }
 

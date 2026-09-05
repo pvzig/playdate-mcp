@@ -37,6 +37,7 @@ import {
   statusInputSchema,
   toolbarInputSchema,
   volumeInputSchema,
+  type ScreenshotInput,
 } from "./schemas.js";
 import { handleToolInvocation } from "./tool-handler.js";
 
@@ -51,6 +52,7 @@ export function registerTools(
   server: McpServer,
   executor: Executor,
   configuration: InvocationConfiguration,
+  workingDirectory: string,
 ): void {
   server.registerTool(
     "playdate_run",
@@ -210,7 +212,9 @@ export function registerTools(
       outputSchema: commandResultSchema,
       annotations: mutatingAnnotations,
     },
-    toolHandler(executor, configuration, screenshotInvocation),
+    toolHandler(executor, configuration, (input: ScreenshotInput, options) =>
+      screenshotInvocation(input, options, workingDirectory),
+    ),
   );
 
   server.registerTool(

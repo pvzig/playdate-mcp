@@ -50,14 +50,24 @@ Each subprocess uses the configured working directory, a `SIGTERM` timeout,
 MCP cancellation, and a 1 MiB output limit. Lifecycle events are JSON on
 standard error; standard output is reserved for MCP messages.
 
+Closing standard input, `SIGINT`, and `SIGTERM` share the shutdown path, which
+closes the MCP transport and cancels active subprocess requests. Shutdown
+events include the initiating `reason`.
+
 ### Results
 
 CLI outcomes return the command, termination, standard output, standard error,
 and success state as structured content. Output-limit and timeout failures stay
 structured; spawn failures are MCP tool errors.
 
+Timeout detection tracks the deadline independently of the child's exit status.
+A child that handles the timeout's `SIGTERM` and exits with code zero still
+returns `timedOut: true` and `succeeded: false`.
+
 A successful screenshot also returns `image/png` content. An unreadable
 artifact makes the tool result unsuccessful even when the CLI exits normally.
+Relative screenshot artifacts are read from the configured subprocess working
+directory, matching CLI path resolution; absolute artifact paths are preserved.
 
 ## Tools
 
@@ -113,3 +123,11 @@ publishing attached GitHub Actions provenance, and a clean registry install
 advertised version 0.1.2 and all 15 tools. Live validation passed status, pause,
 resume, and a 400 by 240 grayscale PNG screenshot through the full bundled
 MCP-to-Simulator path.
+
+The 2026-09-04 repairs passed formatting, the strict build, and all 40 tests.
+Regression coverage exercises relative and absolute screenshot paths through
+stdio with separate server and CLI directories, active-request cancellation on
+EOF and both shutdown signals, and timeouts whose SIGTERM handlers exit with
+zero or nonzero status. The package dry run verified the pinned archive and
+native executable modes. Live bundled MCP validation passed status and a
+relative-path 400 by 240 PNG screenshot with separate working directories.

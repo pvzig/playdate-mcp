@@ -179,7 +179,11 @@ test("tools map to the playdate-simctl command surface", () => {
 
 test("screenshot records the artifact path for MCP image content", () => {
   assert.deepEqual(
-    screenshotInvocation({ output_path: "/tmp/frame.png" }, noOverrides),
+    screenshotInvocation(
+      { output_path: "/tmp/frame.png" },
+      noOverrides,
+      "/game",
+    ),
     {
       arguments: ["screenshot", "/tmp/frame.png"],
       artifact: {

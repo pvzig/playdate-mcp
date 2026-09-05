@@ -24,6 +24,7 @@ export function createServer(configuration: RuntimeConfiguration): McpServer {
       log: logSubprocessExecution,
     }),
     configuration.invocation,
+    configuration.execution.workingDirectory,
   );
   return server;
 }

@@ -1,3 +1,5 @@
+import { resolve } from "node:path";
+
 import type { InvocationConfiguration } from "../configuration/runtime-configuration.js";
 import type {
   AccelerometerInput,
@@ -132,12 +134,13 @@ export function lockInvocation(
 export function screenshotInvocation(
   input: ScreenshotInput,
   configuration: InvocationConfiguration,
+  workingDirectory: string,
 ): ToolInvocation {
   return {
     ...invocation(input, configuration, ["screenshot", input.output_path]),
     artifact: {
       mimeType: "image/png",
-      path: input.output_path,
+      path: resolve(workingDirectory, input.output_path),
     },
   };
 }

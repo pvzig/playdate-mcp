@@ -110,3 +110,27 @@ test("executor terminates commands that exceed the configured timeout", async ()
   assert.equal(commandSucceeded(result), false);
   assert.equal(terminationDescription(result), "timed_out(SIGTERM)");
 });
+
+for (const exitCode of [0, 7]) {
+  test(`executor preserves timeout when SIGTERM is handled with exit ${exitCode}`, async () => {
+    const executor = new SubprocessExecutor(process.execPath, {
+      ...defaultOptions,
+      timeoutMilliseconds: 1_000,
+    });
+    const result = await executor.execute([
+      "-e",
+      `process.on("SIGTERM", () => {
+        process.exit(${exitCode});
+      });
+      process.stdout.write("ready");
+      setInterval(() => {}, 1_000);`,
+    ]);
+
+    assert.equal(result.standardOutput, "ready");
+    assert.equal(result.exitCode, exitCode);
+    assert.equal(result.signal, undefined);
+    assert.equal(result.timedOut, true);
+    assert.equal(commandSucceeded(result), false);
+    assert.equal(terminationDescription(result), "timed_out(unknown)");
+  });
+}

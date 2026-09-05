@@ -41,21 +41,32 @@ export class SubprocessExecutor implements Executor {
   ): Promise<CommandResult> {
     const command = [this.executable, ...arguments_];
     this.log({ command, event: "started" });
+    let timedOut = false;
+    let timeout: NodeJS.Timeout | undefined;
     try {
-      const result = await execFile(this.executable, [...arguments_], {
+      const execution = execFile(this.executable, [...arguments_], {
         cwd: this.options.workingDirectory,
         encoding: "utf8",
         killSignal: "SIGTERM",
         maxBuffer: outputLimit,
         shell: false,
-        timeout: this.options.timeoutMilliseconds,
         ...(signal === undefined ? {} : { signal }),
       });
+      // Track the deadline even when the child handles SIGTERM and exits normally.
+      timeout = setTimeout(() => {
+        timedOut = true;
+        // Match execFile's timeout behavior, including closing inherited pipes.
+        execution.child.stdout?.destroy();
+        execution.child.stderr?.destroy();
+        execution.child.kill("SIGTERM");
+      }, this.options.timeoutMilliseconds);
+      const result = await execution;
       const commandResult: CommandResult = {
         command,
         exitCode: 0,
         standardError: result.stderr,
         standardOutput: result.stdout,
+        ...(timedOut ? { timedOut: true } : {}),
       };
       this.logResult(commandResult);
       return commandResult;
@@ -87,10 +98,6 @@ export class SubprocessExecutor implements Executor {
         throw error;
       }
 
-      const timedOut =
-        processError.killed === true &&
-        errorCode === undefined &&
-        terminationSignal !== undefined;
       const commandResult: CommandResult = {
         command,
         ...(errorCode === undefined ? {} : { errorCode }),
@@ -104,6 +111,8 @@ export class SubprocessExecutor implements Executor {
       };
       this.logResult(commandResult);
       return commandResult;
+    } finally {
+      clearTimeout(timeout);
     }
   }
 
